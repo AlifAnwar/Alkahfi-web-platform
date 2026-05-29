@@ -1,5 +1,6 @@
 // App.jsx
 import {BrowserRouter as Router,Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import UniversalLayout from './components/UniversalLayout';
 import HomePage from './pages/HomePage';
 import HaditsPage from './pages/HaditsPage';
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="/comingsoon" element={<ComingSoon />} />
         </Route>
       </Routes>
+      <Analytics />
     </Router>
   );
 };
