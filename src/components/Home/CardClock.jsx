@@ -1,9 +1,7 @@
 import PropTypes from "prop-types";
-const CardClock = ({ sholatTime }) => {
-  CardClock.propTypes = {
-    sholatTime: PropTypes.object, // Sesuaikan dengan tipe data yang sebenarnya
-  };
+import { Clock3 } from "lucide-react";
 
+const CardClock = ({ loading, sholatTime }) => {
   // console.log(sholatTime ? sholatTime.subuh : "Loading..");
 
   function getCurrentTime() {
@@ -21,61 +19,67 @@ const CardClock = ({ sholatTime }) => {
   const currentTime = getCurrentTime();
   // console.log(currentTime);
 
-  const subuhTime = sholatTime ? sholatTime.subuh : "Loading..";
-  const dhuhaTime = sholatTime ? sholatTime.dhuha : "Loading..";
-  const dzuhurTime = sholatTime ? sholatTime.dzuhur : "Loading..";
-  const asharTime = sholatTime ? sholatTime.ashar : "Loading..";
-  const maghribTime = sholatTime ? sholatTime.maghrib : "Loading..";
-  const isyaTime = sholatTime ? sholatTime.isya : "Loading..";
+  let sholatTimeNow = loading ? "Memuat" : "-";
 
-  let sholatTimeNow;
+  if (sholatTime) {
+    const subuhTime = sholatTime.subuh;
+    const dhuhaTime = sholatTime.dhuha;
+    const dzuhurTime = sholatTime.dzuhur;
+    const asharTime = sholatTime.ashar;
+    const maghribTime = sholatTime.maghrib;
+    const isyaTime = sholatTime.isya;
 
-  if (currentTime >= subuhTime && currentTime < dhuhaTime) {
-    sholatTimeNow = "Shubuh";
-  } else if (currentTime >= dhuhaTime && currentTime < dzuhurTime) {
-    sholatTimeNow = "Dhuha";
-  } else if (currentTime >= dzuhurTime && currentTime < asharTime) {
-    sholatTimeNow = "Dzuhur";
-  } else if (currentTime >= asharTime && currentTime < maghribTime) {
-    sholatTimeNow = "Ashar";
-  } else if (currentTime >= maghribTime && currentTime < isyaTime) {
-    sholatTimeNow = "Maghrib";
-  } else if (
-    (currentTime >= isyaTime && currentTime > subuhTime) ||
-    (currentTime <= subuhTime && currentTime < isyaTime)
-  ) {
-    sholatTimeNow = "Isya";
+    if (currentTime >= subuhTime && currentTime < dhuhaTime) {
+      sholatTimeNow = "Shubuh";
+    } else if (currentTime >= dhuhaTime && currentTime < dzuhurTime) {
+      sholatTimeNow = "Dhuha";
+    } else if (currentTime >= dzuhurTime && currentTime < asharTime) {
+      sholatTimeNow = "Dzuhur";
+    } else if (currentTime >= asharTime && currentTime < maghribTime) {
+      sholatTimeNow = "Ashar";
+    } else if (currentTime >= maghribTime && currentTime < isyaTime) {
+      sholatTimeNow = "Maghrib";
+    } else {
+      sholatTimeNow = "Isya";
+    }
   }
 
   return (
-    <div className="bg-gradient-to-r from-blue-800 to-indigo-900 sm:gap-32 text-white p-5 rounded-xl flex flex-col sm:flex-row sm:py-12 ">
-      <div className="info-1  ">
-        <div className="masjidName flex justify-between flex-col  text-center sm:text-left">
-          <h1 className="text-2xl font-semibold ">
+    <div className="flex flex-col gap-6 rounded-xl bg-neutral-950 p-6 text-white shadow-lg sm:flex-row sm:items-center sm:justify-between sm:p-8">
+      <div>
+        <div className="max-w-2xl text-center sm:text-left">
+          <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-primary-200">
+            Waktu Ibadah
+          </p>
+          <h2 className="text-2xl font-bold sm:text-3xl">
             Alkahfi Mosque Prayers Time
-          </h1>
-          <p className="w-full sm:w-[80%] pt-3">
+          </h2>
+          <p className="pt-3 text-sm leading-6 text-neutral-300 sm:text-base">
             Hi people of faith, make patience and prayer your helpers, indeed
             God is with those who are patient. - Al-Baqarah: 153
           </p>
         </div>
       </div>
-      <div className="info-2 flex-col w-[80vw] sm:w-1/3">
-        <div className="infoTime flex gap-3 text-xl justify-center items-center pt-7 ">
-          <p className="font-bold">Now</p>
-          <span className="material-symbols-outlined text-sm text-red-500">
-            circle
-          </span>
-          {/* waktu sholat */}
-          <p>
-            <span className="font-bold">{sholatTimeNow}</span> Time{" "}
-          </p>
+      <div className="rounded-lg border border-white/10 bg-white/10 p-5 text-center backdrop-blur sm:min-w-52">
+        <div className="mb-2 flex items-center justify-center gap-2 text-sm font-semibold text-primary-100">
+          <Clock3 size={18} aria-hidden="true" />
+          Sekarang
         </div>
-        {/* waktu saat ini */}
-        <h1 className="text-center text-xl py-3 "></h1>
+        <p className="text-3xl font-bold">{sholatTimeNow}</p>
+        <p className="mt-1 text-sm text-neutral-300">Time</p>
       </div>
     </div>
   );
+};
+
+CardClock.propTypes = {
+  loading: PropTypes.bool,
+  sholatTime: PropTypes.object,
+};
+
+CardClock.defaultProps = {
+  loading: false,
+  sholatTime: null,
 };
 
 export default CardClock;

@@ -1,94 +1,134 @@
-// image
-import CharityImg from "../../assets/CharityBox.png";
-import ScheduleImg from "../../assets/Calendar.png";
-import BookImg from "../../assets/AlQuranBook.png";
-// import DoaImg from "../../assets/Chat.png"
-
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { BookOpen, CalendarDays, HeartHandshake, Sparkles } from "lucide-react";
 import HadisController from "../../Controller/HadisController";
+import ServiceCard from "./ServiceCard";
 
 const CardServiceFeature = () => {
+  const [hadisError, setHadisError] = useState(null);
+  const [hadisLoading, setHadisLoading] = useState(false);
   const [randomHadis, setRamdomHadis] = useState(null);
+
+  const fetchHadis = async () => {
+    const dataHadis = new HadisController();
+    setHadisLoading(true);
+    setHadisError(null);
+
+    try {
+      const randomHadis = await dataHadis.getRandomHadis();
+      setRamdomHadis(randomHadis);
+    } catch (error) {
+      setHadisError(error.message || "Hadis gagal dimuat.");
+    } finally {
+      setHadisLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchHadis();
   }, []);
 
-  const fetchHadis = async () => {
-    const dataHadis = new HadisController();
-    try {
-      const randomHadis = await dataHadis.getRandomHadis();
-      setRamdomHadis(randomHadis);
-      // const hadis = randomHadis ? randomHadis : "Loading..";
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
 
-  const handleButtonClickHadis = () => {
-    fetchHadis();
-    // console.log(randomHadis);
-    document.getElementById("my_modal_5").showModal();
-  };
-  const perawi = randomHadis ? randomHadis.info.perawi.name : "Loading";
-  const noHadis = randomHadis ? randomHadis.data.number : "Loading";
-  const arHadis = randomHadis ? randomHadis.data.arab : "Loading";
-  const idHadis = randomHadis ? randomHadis.data.id : "Loading";
+
+  const services = [
+    {
+      description: "Jadwal sholat harian dan bulanan wilayah Bintan.",
+      href: "/sholat",
+      icon: <CalendarDays size={24} aria-hidden="true" />,
+      title: "Jadwal Sholat",
+      tone: "primary",
+    },
+    {
+      description: "Hadis pilihan untuk bacaan jamaah.",
+      href: "/hadits",
+      icon: <BookOpen size={24} aria-hidden="true" />,
+      title: "Hadis",
+      tone: "accent",
+    },
+    {
+      description: "Doa harian untuk bacaan jamaah.",
+      href: "/doa",
+      icon: <Sparkles size={24} aria-hidden="true" />,
+      title: "Doa",
+      tone: "success",
+    },
+    {
+      description: "Informasi sedekah Masjid Al Kahfi.",
+      href: "/comingsoon",
+      icon: <HeartHandshake size={24} aria-hidden="true" />,
+      title: "Sedekah",
+      tone: "accent",
+    },
+  ];
+
+  const perawi = randomHadis ? randomHadis.info.perawi.name : "Memuat";
+  const noHadis = randomHadis ? randomHadis.data.number : "Memuat";
+  const arHadis = randomHadis ? randomHadis.data.arab : "Memuat";
+  const idHadis = randomHadis ? randomHadis.data.id : "Memuat";
 
   return (
-    <div className="ContainerFeature w-full flex flex-col p-5 justify-center items-center flex-wrap">
-      <h1 className="text-2xl font-bold mb-4">Service</h1>
-      <div className="boxervice flex gap-5 justify-center items-center w-full flex-wrap">
-        <a href="/comingsoon" className="shadow-sm hover:shadow-lg">
-          <div className="card w-44 bg-blue-100 shadow-sm rounded-md flex items-center justify-center py-3">
-            <img src={CharityImg} alt="" className="object-cover w-36" />
-            <h2 className="text-base bg-base-100 p-1 px-3 rounded-full text-center hover:bg-yellow-50">
-              Charity
-            </h2>
-          </div>
-        </a>
+    <section className="bg-white py-14 sm:py-16 lg:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto mb-10 max-w-2xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">
+            Layanan
+          </p>
+          <h2 className="mt-2 font-display text-3xl font-bold text-neutral-950 sm:text-4xl">
+            Informasi ibadah Masjid Al Kahfi
+          </h2>
+          <p className="mt-4 text-base leading-7 text-neutral-600">
+            Jadwal sholat, hadits, doa, dan sedekah untuk jamaah.
+          </p>
+        </div>
 
-        <a href="/SholatSchedule" className="shadow-sm hover:shadow-lg">
-          <div className="card w-44 bg-blue-100 shadow-sm rounded-md flex items-center justify-center py-3">
-            <img src={ScheduleImg} alt="" className="object-cover w-36" />
-            <h2 className="text-base bg-base-100 p-1 px-3 rounded-full text-center hover:bg-yellow-50">
-              Sholat Schedule
-            </h2>
-          </div>
-        </a>
-
-        <button
-          className="shadow-sm hover:shadow-lg"
-          onClick={handleButtonClickHadis}
-        >
-          <div className="card w-44 bg-blue-100 shadow-sm rounded-md flex items-center justify-center py-3">
-            <img src={BookImg} alt="" className="object-cover w-36" />
-            <h2 className="text-base bg-base-100 p-1 px-3 rounded-full text-center hover:bg-yellow-50">
-              Hadis
-            </h2>
-          </div>
-        </button>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {services.map((service) => (
+            <ServiceCard key={service.title} {...service} />
+          ))}
+        </div>
       </div>
-      {/* Modal Hadis */}
+
       <dialog
+        className="modal modal-bottom w-auto sm:modal-middle"
         id="my_modal_5"
-        className="modal modal-bottom w-auto sm:modal-middle pets"
       >
-        <div className="modal-box">
-          <div className="headHadis flex w-full  justify-between items-center">
-            <h3 className="font-bold text-lg">Riwayah {perawi}</h3>
-            <p>Nomor {noHadis} </p>
+        <div className="modal-box rounded-xl">
+          <div className="flex w-full flex-col gap-2 border-b border-neutral-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <h3 className="text-lg font-bold text-neutral-950">
+              Riwayah {perawi}
+            </h3>
+            <p className="text-sm font-semibold text-primary-700">
+              Nomor {noHadis}
+            </p>
           </div>
-          <p className="p-4"> {arHadis} </p>
-          <p className="py-4">{idHadis}</p>
+
+          {hadisError ? (
+            <div className="my-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+              {hadisError}
+            </div>
+          ) : (
+            <div className="space-y-4 py-5">
+              <p className="text-right text-2xl leading-loose text-neutral-950">
+                {hadisLoading ? "Memuat..." : arHadis}
+              </p>
+              <p className="text-sm leading-7 text-neutral-700">
+                {hadisLoading ? "Memuat..." : idHadis}
+              </p>
+            </div>
+          )}
+
           <div className="modal-action">
-            <form method="dialog">
-              {/* if there is a button in the form, it will close the modal */}
-              <button className="btn">Close</button>
+            <form className="flex gap-2" method="dialog">
+              <button className="btn btn-ghost" type="button" onClick={fetchHadis}>
+                Hadis lain
+              </button>
+              <button className="btn bg-primary-700 text-white hover:bg-primary-800">
+                Tutup
+              </button>
             </form>
           </div>
         </div>
       </dialog>
-    </div>
+    </section>
   );
 };
 
